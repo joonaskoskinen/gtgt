@@ -1,8 +1,22 @@
 import zipfile
 import os
+import subprocess
 
-zip_path = "/vercel/share/v0-project/Uusi WinRAR ZIP archive (2).zip"
-extract_to = "/vercel/share/v0-project/extracted"
+# Find zip files anywhere on the system
+result = subprocess.run(["find", "/", "-name", "*.zip", "-type", "f"], capture_output=True, text=True, timeout=10)
+print("Found zip files:")
+print(result.stdout)
+if result.stderr:
+    print("Errors:", result.stderr[:500])
+
+zip_files = [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+
+if not zip_files:
+    raise FileNotFoundError("No zip files found")
+
+zip_path = zip_files[0]
+extract_to = "/home/user/extracted"
+print(f"Using: {zip_path}")
 
 with zipfile.ZipFile(zip_path, 'r') as z:
     print("ZIP-tiedoston sisalto:")
